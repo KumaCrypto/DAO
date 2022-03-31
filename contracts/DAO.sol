@@ -2,10 +2,11 @@
 pragma solidity ^0.8.11;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ICDAO.sol";
 
-contract DAO is AccessControl {
+contract DAO is AccessControl, ReentrancyGuard {
     using Counters for Counters.Counter;
     Counters.Counter private proposalsCounter;
 
@@ -22,8 +23,8 @@ contract DAO is AccessControl {
     event voted(address indexed user, uint256 indexed proposal, bool answer);
 
     mapping(address => uint256) private _balances;
-    mapping(address => uint256) private _userToEndTime;
     mapping(uint256 => Proposal) private _proposals;
+    mapping(address => uint256) private _userToEndTime;
     mapping(address => mapping(uint256 => bool)) private _isVoted;
 
     struct Proposal {
@@ -76,19 +77,23 @@ contract DAO is AccessControl {
         emit proposalAdded(current, block.timestamp);
     }
 
-    function vote(uint256 proposalId, bool answer) external {
+    function vote(uint256 proposalId, bool answer) external nonReentrant {
         require(
             _proposals[proposalId].EndTime < block.timestamp,
-            "The voting is already over"
+            "DAO: The voting is already over"
         );
         require(
             _isVoted[msg.sender][proposalId] == false,
-            "You have already voted in this proposal"
+            "DAO: You have already voted in this proposal"
         );
 
         answer
             ? _proposals[proposalId].consenting += _balances[msg.sender]
             : _proposals[proposalId].dissenters += _balances[msg.sender];
+
+        _isVoted[msg.sender][proposalId] = true;
+        _userToEndTime[msg.sender] = _proposals[proposalId].EndTime;
+
         emit voted(msg.sender, proposalId, answer);
     }
 
