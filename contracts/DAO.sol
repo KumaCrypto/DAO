@@ -97,6 +97,7 @@ contract DAO is AccessControl, ReentrancyGuard {
     }
 
     function vote(uint256 proposalId, bool answer) external nonReentrant {
+        require(_users[msg.sender].balance > 0, "DAO: No tokens on balance");
         require(
             _proposals[proposalId].EndTime > block.timestamp,
             "DAO: The voting is already over or does not exist"

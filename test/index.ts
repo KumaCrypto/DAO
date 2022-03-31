@@ -216,6 +216,7 @@ describe("DAO", function () {
 
     beforeEach(async function () {
       await DAO.addProposal(TContract.address, txData, "Some description");
+      await DAO.deposit(defaultAmount);
     });
 
     it("vote: reverted 'timeEnded' ", async () => {
@@ -262,12 +263,21 @@ describe("DAO", function () {
       expect(await DAO.userLastVoteEndTime(signers[0].address)).to.eq(time[2]);
     });
 
-    // it("vote: changed isVoted", async () => {
-    //   await DAO.vote(0, true);
-    //   expect(await DAO.isUserVoted(signers[0].address, 0)).to.eq(true);
-    // });
+    it("vote: usersVoted incremented", async () => {
+      const proposalBefore = await DAO.getProposalById(0);
+      await DAO.vote(0, true);
+      const proposalAfter = await DAO.getProposalById(0);
+      expect(proposalBefore[5].add(1)).to.eq(proposalAfter[5]);
+    });
 
+  });
 
+  describe("vote exception", () => {
+    it("vote: reverted 'no tokens'", async () => {
+      await DAO.addProposal(TContract.address, txData, "Some description");
+
+      await expect(DAO.vote(0, true)).to.be.revertedWith("DAO: No tokens on balance");
+    });
 
   });
 
