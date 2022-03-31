@@ -9,6 +9,7 @@ import "./ICDAO.sol";
 contract DAO is AccessControl, ReentrancyGuard {
     using Counters for Counters.Counter;
     Counters.Counter private proposalsCounter;
+    Counters.Counter private activeUsers;
 
     bytes32 private constant CHAIRMAN_ROLE = keccak256("CHAIRMAN_ROLE");
 
@@ -54,6 +55,7 @@ contract DAO is AccessControl, ReentrancyGuard {
     function deposit(uint256 amount) external {
         voteToken.transferFrom(msg.sender, address(this), amount);
         _balances[msg.sender] += amount;
+        activeUsers.increment();
         emit credited(msg.sender, amount);
     }
 
@@ -93,6 +95,7 @@ contract DAO is AccessControl, ReentrancyGuard {
 
         _isVoted[msg.sender][proposalId] = true;
         _userToEndTime[msg.sender] = _proposals[proposalId].EndTime;
+        _proposals[proposalId].usersVoted++;
 
         emit voted(msg.sender, proposalId, answer);
     }
@@ -107,6 +110,11 @@ contract DAO is AccessControl, ReentrancyGuard {
             "DAO: The last vote you participated in hasn't ended yet"
         );
         _balances[msg.sender] -= amount;
+
+        if (_balances[msg.sender] == 0) {
+            activeUsers.decrement();
+        }
+
         emit withdrawn(msg.sender, amount);
     }
 
@@ -116,6 +124,10 @@ contract DAO is AccessControl, ReentrancyGuard {
         returns (Proposal memory)
     {
         return _proposals[id];
+    }
+
+    function getActiveUsers() external view returns (uint256) {
+        return activeUsers.current();
     }
 
     function getToken() external view returns (address) {
