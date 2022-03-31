@@ -81,7 +81,7 @@ contract DAO is AccessControl, ReentrancyGuard {
 
     function vote(uint256 proposalId, bool answer) external nonReentrant {
         require(
-            _proposals[proposalId].EndTime < block.timestamp,
+            _proposals[proposalId].EndTime > block.timestamp,
             "DAO: The voting is already over"
         );
         require(
