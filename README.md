@@ -1,28 +1,5 @@
-// Необходимы реализовать смарт контракт, который будет вызывать сигнатуру функции посредством голосования пользователей.
-// -Написать контракт DAO
-// -Написать полноценные тесты к контракту
-// -Написать скрипт деплоя
-// -Задеплоить в тестовую сеть
-// -Написать таск на vote, addProposal, finish, deposit.
-// -Верифицировать контракт
-// Требования
-// -Для участия в голосовании пользователям необходимо внести  токены для голосования.
-// -Вывести токены с DAO, пользователи могут только после окончания всех голосований, в которых они участвовали.
-// -Голосование может предложить только председатель.
-// -Для участия в голосовании пользователю необходимо внести депозит, один токен один голос.
-// -Пользователь может участвовать в голосовании одними и теми же токенами, то есть пользователь внес 100 токенов он может участвовать в голосовании №1 всеми 100 токенами и в голосовании №2 тоже всеми 100 токенами.
-// -Финишировать голосование может любой пользователь по прошествии определенного количества времени установленном в конструкторе.
-// Ссылки:
-// презентация:
-// https://docs.google.com/presentation/d/1U9iOUNTx2kMJzoPa_v3LnVbf0EGK0Lbrvoa9aewNvLg/edit?usp=sharing
-// WEB3
-// https://web3js.readthedocs.io/en/v1.2.11/web3-eth-abi.html
-// ethers
-// https://docs.ethers.io/v5/api/utils/abi/coder/
-
-// проект The DAO
-// https://www.forbes.ru/tekhnologii/457485-velicajsaa-zagadka-v-istorii-kriptovalut-kto-vzlomal-the-dao-i-ukral-53-mln
-// https://medium.com/swlh/the-story-of-the-dao-its-history-and-consequences-71e6a8a551ee
-
-// пример такой атаки
-// https://solidity-by-example.org/hacks/re-entrancy/
+    Deployed in rinkeby
+    =================
+    "DAO" contract address: 0x34D47CF6A92b1EbaF1e5F0aEB94dE7f043D104C4
+    "Token" contract address: 0xAadF07e1D4D8Ed98961534E3f48c4B417E54485a
+    0xF7A623297100b5Df95FeDDe19361584B1Ef5Ab8c - deployed this contracts

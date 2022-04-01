@@ -1,29 +1,52 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// When running the script with `npx hardhat run <script>` you'll find the Hardhat
-// Runtime Environment's members available in the global scope.
-import { ethers } from "hardhat";
+import { ethers, run } from "hardhat";
 
 async function main() {
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
+  const [signer] = await ethers.getSigners();
 
-  // We get the contract to deploy
-  const Greeter = await ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  // Data for example, change for yourself
+  const minimumQuorum: number = 51;
+  const debatingPeriodDuration: number = 259200; // 3 days
+  const _minimumVotes: number = 1000;
 
-  await greeter.deployed();
+  const DAO_f = await ethers.getContractFactory("DAO");
+  const Token = await ethers.getContractFactory("CryptonToken");
 
-  console.log("Greeter deployed to:", greeter.address);
+  const token = await Token.deploy();
+  await token.deployed();
+
+  const DAO = await DAO_f.deploy(
+    token.address,
+    minimumQuorum,
+    debatingPeriodDuration,
+    _minimumVotes
+  );
+  await DAO.deployed();
+
+  await run(`verify:verify`, {
+    address: token.address,
+    contract: "contracts/CryptonToken.sol:CryptonToken",
+  });
+
+  await run(`verify:verify`, {
+    address: DAO.address,
+    contract: "contracts/DAO.sol:DAO",
+    constructorArguments: [
+      token.address,
+      minimumQuorum,
+      debatingPeriodDuration,
+      _minimumVotes,
+    ],
+  });
+
+  console.log(`
+    Deployed in rinkeby
+    =================
+    "DAO" contract address: ${DAO.address}
+    "Token" contract address: ${token.address}
+    ${signer.address} - deployed this contracts
+  `);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
