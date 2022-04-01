@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
-import "./ICDAO.sol";
+import "./IERC20.sol";
 
 contract DAO is AccessControl, ReentrancyGuard {
     using Counters for Counters.Counter;
